@@ -77,6 +77,9 @@ public class FilterPathMappingTestCase {
         builder.addServlet(new ServletInfo("*.jsp", PathMappingServlet.class)
                 .addMapping("*.jsp"));
 
+        builder.addServlet(new ServletInfo("/hello/*", PathMappingServlet.class)
+                .addMapping("/hello/*"));
+
         builder.addFilter(new FilterInfo("/*", PathFilter.class));
         builder.addFilterUrlMapping("/*", "/*", DispatcherType.REQUEST);
 
@@ -105,6 +108,9 @@ public class FilterPathMappingTestCase {
         builder.addFilter(new FilterInfo("defaultName", PathFilter.class));
         builder.addFilterServletNameMapping("defaultName", "/", DispatcherType.REQUEST);
 
+        builder.addFilter(new FilterInfo("/helloworld/index.html", PathFilter.class));
+        builder.addFilterUrlMapping("/helloworld/index.html", "/helloworld/index.html", DispatcherType.REQUEST);
+
         builder.setClassIntrospecter(TestClassIntrospector.INSTANCE)
                 .setClassLoader(FilterPathMappingTestCase.class.getClassLoader())
                 .setContextPath("/servletContext")
@@ -132,6 +138,7 @@ public class FilterPathMappingTestCase {
             runTest(client, "myservlet/myfilter/file.jsp", "/myservlet/* - /myservlet - /myfilter/file.jsp", "/*", "*", "/myservlet/myfilter/*");
             runTest(client, "otherservlet/myfilter/file.jsp", "*.jsp - /otherservlet/myfilter/file.jsp - null", "/*", "*");
             runTest(client, "myfilter/file.jsp", "*.jsp - /myfilter/file.jsp - null", "/*", "*", "/myfilter/*");
+            runTest(client, "helloworld/index.html", "/ - /helloworld/index.html - null", "/*", "*", "/helloworld/index.html", "defaultName");
 
         } finally {
             client.getConnectionManager().shutdown();
